@@ -9,5 +9,20 @@ socket.on('disconnect', function() {
 });
 
 socket.on('newMessage', function(message) {
-  console.log(message.from+':', message.text, 'at '+message.createdAt);
+  var li = $('<li></li>');
+  li.text(`${message.from}: ${message.text}`);
+  $('#messages').append(li);
+});
+
+$(function() {
+  $('#message-form').on('submit', function(e) {
+      e.preventDefault();
+
+      socket.emit('createMessage', {
+        from: 'User',
+        text: $('[name="message"]').val()
+      }, function(data) {
+        console.log(data);
+      });
+  });
 });
