@@ -1,0 +1,16 @@
+{
+  "env": {
+    "node": true,
+    "browser": true,
+    "es6": true,
+    "mocha": true
+  },
+  "rules": {
+    "no-extra-parens": 0,
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "semi": 2
+  }
+}

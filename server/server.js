@@ -25,21 +25,23 @@ io.on('connection', (socket) => {
       return callback('Name and Room are required.');
     }
 
-    socket.join(params.room);
-    users.removeUser(socket.id);
-    users.addUser(socket.id, params.name, params.room);
+    const room = params.room.toLowerCase();
 
-    io.to(params.room).emit('updateUserList', users.getUserList(params.room));
-    // socket.leave(params.room);
+    socket.join(room);
+    users.removeUser(socket.id);
+    users.addUser(socket.id, params.name, room);
+
+    io.to(room).emit('updateUserList', users.getUserList(room));
+    // socket.leave(room);
 
     // io.emit - send to everyone
     // socket.broadcast.emit - send to everyone except current user
     // socket.emit - send to one user
-    // io.to(params.room) - send to everyone with specific room
-    // socket.broadcast.to(params.room) - send to everyone with specific room except current user
+    // io.to(room) - send to everyone with specific room
+    // socket.broadcast.to(room) - send to everyone with specific room except current user
 
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app dirtbag'));
-    socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
+    socket.broadcast.to(room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
 
     callback();
   });
@@ -73,3 +75,10 @@ io.on('connection', (socket) => {
 server.listen( port, () => {
   console.log(`Server is up on port ${port}`);
 } );
+
+// make usernames unique
+// list current chat rooms
+// browser notifications
+// local storage of user
+// switch between rooms?
+// react frontend
