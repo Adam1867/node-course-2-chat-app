@@ -11,7 +11,7 @@ const server = http.createServer( app );
 const io = socketIO(server);
 
 const { generateMessage, generateLocationMessage } = require('./utils/message');
-const { isRealString } = require('./utils/validation');
+const { isRealString, isUniqueName } = require('./utils/validation');
 const { Users } = require('./utils/users');
 
 const users = new Users();
@@ -23,6 +23,9 @@ io.on('connection', (socket) => {
   socket.on('join', (params, callback) => {
     if ( !isRealString(params.name) || !isRealString(params.room) ) {
       return callback('Name and Room are required.');
+    }
+    if ( !isUniqueName(params.name, users.users) ) {
+      return callback('Name already taken.');
     }
 
     const room = params.room.toLowerCase();
@@ -76,7 +79,6 @@ server.listen( port, () => {
   console.log(`Server is up on port ${port}`);
 } );
 
-// make usernames unique
 // list current chat rooms
 // browser notifications
 // local storage of user
