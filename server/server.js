@@ -79,8 +79,6 @@ server.listen( port, () => {
   console.log(`Server is up on port ${port}`);
 } );
 
-// list current chat rooms
-// browser notifications
 // local storage of user
 // switch between rooms?
 // react frontend

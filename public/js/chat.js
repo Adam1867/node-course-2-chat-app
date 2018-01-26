@@ -1,5 +1,20 @@
 $(function() {
 
+  // set notification count
+  var notificationCount = 0;
+  // set original page title
+  var origTitle = $(document).attr('title');
+
+  // sets a window.isActive property if tab is focused/unfocused
+  window.isActive = true;
+  $(window).focus(function() {
+    this.isActive = true;
+    resetNotificationCount();
+  });
+  $(window).blur(function() {
+    this.isActive = false;
+  });
+
   var socket = io();
 
   function scrollToBottom() {
@@ -16,7 +31,27 @@ $(function() {
     if ( clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight ) {
       $messages.scrollTop(scrollHeight);
     }
+
+    resetNotificationCount();
   }
+
+  function increaseNotificationCount() {
+    if ( !window.isActive || !$('.message:last-child').visible() ) {
+      notificationCount++;
+      $(document).attr('title', '('+notificationCount+') '+origTitle);
+    }
+  }
+
+  function resetNotificationCount() {
+    if ( window.isActive && $('.message:last-child').visible() ) {
+      notificationCount = 0;
+      $(document).attr('title', '('+notificationCount+') '+origTitle);
+    }
+  }
+
+  $('#messages').scroll(function() {
+    resetNotificationCount();
+  });
 
   socket.on('connect', function() {
     var params = $.deparam(window.location.search);
@@ -24,8 +59,6 @@ $(function() {
       if ( err ) {
         alert(err);
         window.location.href = '/';
-      } else {
-        console.log('no error');
       }
     });
   });
@@ -52,6 +85,7 @@ $(function() {
     });
     $('#messages').append(html);
     scrollToBottom();
+    increaseNotificationCount();
   });
 
   socket.on('newLocationMessage', function(message) {
